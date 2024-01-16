@@ -43,6 +43,7 @@ async function returnPlayerList(id) {
 
     const sqlUser = "SELECT id_usuario, nombre_usuario, apellido_usuario, nick_usuario, icono, circuitotormenta, twitter, discord FROM usuarios WHERE id_usuario = ?";
     const sqlCuentas = "SELECT invocador, tag, linea_principal, linea_secundaria FROM cuentas_lol WHERE id_usuario = ?";
+    const sqlEstadisticas = "SELECT * FROM estadisticas_usuarios WHERE id_usuario = ?";
 
     try {
         const result2 = await query(sqlUser, [id]);
@@ -50,6 +51,9 @@ async function returnPlayerList(id) {
 
         const result3 = await query(sqlCuentas, [id]);
         usuario.cuentas = result3;
+
+        const result4 = await query(sqlEstadisticas, [id]);
+        usuario.estadisticas = result4[0];
 
         return usuario;
     } catch (error) {

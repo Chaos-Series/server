@@ -64,7 +64,7 @@ router.get("/inhouses/id=:id", [auth, viewer], (req, res) => {
 });
 
 router.put("/inhouses/estadisticas", (req, res) => {
-  const sqlSelect = "SELECT match_id FROM partidos WHERE tipo = 1 AND estadisticas_recogidas = 0 AND match_id IS NOT null AND match_id = 6695186270";
+  const sqlSelect = "SELECT match_id FROM partidos WHERE tipo = 1 AND estadisticas_recogidas = 0 AND match_id IS NOT null limit 1";
   db.query(sqlSelect, (err, result) => {
     if (err) {
       res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
