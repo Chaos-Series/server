@@ -18,12 +18,26 @@ const limiter = rateLimit({
     },
 });
 
+const allowedOrigins = [
+    "https://chaosseries.com",
+    "https://panel.chaosseries.com",
+    "http://localhost:5173",
+]
+
 // Importamos middlewares
 app.use(express.json());
 app.use(limiter); // app.use("/api/", limiter);
 app.use(bodyParser.json());
 app.use(express.static("public"));
-app.use(cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+
+        if (!origin) return callback(null, true);
+
+        return callback(new Error("Acceso denegado."), false);
+    },
+}));
 
 // Importamos rutas
 const authRouter = require("./routes/auth");
