@@ -77,14 +77,17 @@ router.post("/", [auth, self], async (req, res) => {
 });
 
 router.put("/", [auth, self], async (req, res) => {
-    // /cuenta
-    // modificamos un usuario
+    // /cuentas
+    // modificamos una cuenta de un usuario
     id = req.body.id;
-    puuid_lol = req.body.puuid_lol;
     invocador = req.body.invocador;
+    tag = req.body.tag;
+    puuid_lol = req.body.puuid_lol;
+    linea_principal = req.body.linea_principal;
+    linea_secundaria = req.body.linea_secundaria;
 
-    const sql = "UPDATE cuentas_lol SET invocador = ?, puuid_lol = ? WHERE id_cuenta = ?";
-    db.query(sql, [invocador, puuid_lol, id], (err, result) => {
+    const sql = "UPDATE cuentas_lol SET invocador = ?, puuid_lol = ?, linea_principal = ?, linea_secundaria = ?, tag = ? WHERE id_cuenta = ?";
+    db.query(sql, [invocador, puuid_lol, linea_principal, linea_secundaria, tag, id], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
