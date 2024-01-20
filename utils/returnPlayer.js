@@ -38,24 +38,66 @@ function returnPlayer(id, res) {
     });
 }
 
-async function returnPlayerList(id) {
-    let usuario = { info: {}, cuentas: {}, estadisticas: {} };
-
-    const sqlUser = "SELECT id_usuario, nombre_usuario, apellido_usuario, nick_usuario, icono, circuitotormenta, twitter, discord FROM usuarios WHERE id_usuario = ?";
-    const sqlCuentas = "SELECT invocador, tag, linea_principal, linea_secundaria FROM cuentas_lol WHERE id_usuario = ?";
-    const sqlEstadisticas = "SELECT * FROM estadisticas_usuarios WHERE id_usuario = ?";
+async function returnPlayerList(res) {
+    let usuarios = [];
+    const sqlInfo = "SELECT id_usuario, id_equipo, nombre_usuario, apellido_usuario, nick_usuario, icono, circuitotormenta, twitter, discord FROM usuarios WHERE rol = 1 AND nombre_usuario != 'NECESITA MODIFICACIÓN' AND apellido_usuario != 'NECESITA MODIFICACIÓN'";
+    const sqlCuentas = "SELECT * FROM cuentas_lol";
+    const sqlEquipo = "SELECT * FROM equipos";
+    const sqlEstadisticas = "SELECT * FROM estadisticas_usuarios";
 
     try {
-        const result2 = await query(sqlUser, [id]);
-        usuario.info = result2[0];
+        let informacion;
+        let cuentas;
+        let equipos;
+        let estadisticas;
+        
+        db.query(sqlInfo, (error, result) => {
+            if (error) {
+                res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: error });
+            } else {
+                informacion = result;
+                db.query(sqlCuentas, (error, result) => {
+                    if (error) {
+                        res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: error });
+                    } else {
+                        cuentas = result;
+                        db.query(sqlEquipo, (error, result) => {
+                            if (error) {
+                                res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: error });
+                            } else {
+                                equipos = result;
+                                db.query(sqlEstadisticas, (error, result) => {
+                                    if (error) {
+                                        res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: error });
+                                    } else {
+                                        estadisticas = result;
 
-        const result3 = await query(sqlCuentas, [id]);
-        usuario.cuentas = result3;
+                                        //Si recibimos toda la información, procesamos los datos.
+                                        if(informacion.length > 0 && cuentas.length > 0 && equipos.length > 0){ 
+                                            informacion.forEach((info) => {
+                                                let usuario = { user: {}, cuentas: {}, equipo: {}, estadisticas: {} };
+                                                let equipo = equipos.find((equipo) => equipo.id_equipo == info.id_equipo);
+                                                let estadistica = estadisticas.find((estadistica) => estadistica.id_usuario == info.id_usuario);
+                                                let cuentasUser = cuentas.filter((cuenta) => cuenta.id_usuario == info.id_usuario);
 
-        const result4 = await query(sqlEstadisticas, [id]);
-        usuario.estadisticas = result4[0];
-
-        return usuario;
+                                                usuario.user = info; //Información del Usuario
+                                                usuario.cuentas = cuentasUser; //Cuentas del Usuario
+                                                usuario.equipo = equipo === undefined ? [] : equipo; // Si el Usuario no tiene Equipo, se indica un array Vacío (Para quitarlo en el filtro)
+                                                usuario.estadisticas = estadistica === undefined ? [] : estadistica; // Si el Usuario no tiene Estadísticas, se indica un array Vacío (Para quitarlo en el filtro)
+                                                
+                                                //if(usuario.equipo.length != 0) //Filtrar los Usuarios que tengan Equipo
+                                                usuarios.push(usuario);
+                                            });
+                                        }
+                                        res.send({ status: 200, success: true, result: usuarios });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
     } catch (error) {
         throw error;
     }

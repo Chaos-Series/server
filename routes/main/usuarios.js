@@ -31,19 +31,8 @@ router.get("/", (req, res) => {
 });
 
 router.get("/jugadores", async (req, res) => {
-  const sqlSelect =
-    "SELECT id_usuario FROM usuarios WHERE rol = 1 AND nombre_usuario != 'NECESITA MODIFICACIÓN' AND apellido_usuario != 'NECESITA MODIFICACIÓN'";
-
-  try {
-    const result = await query(sqlSelect);
-    const promises = result.map((jugador) => returnPlayerList(jugador.id_usuario));
-    const listaJugadores = await Promise.all(promises);
-
-    res.send({ status: 200, success: true, result: listaJugadores });
-  } catch (err) {
-    console.log(err);
-    res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
-  }
+  // Retorna la Lista de Jugadores con => (Información, Cuentas, Equipo, Estadística)
+    returnPlayerList(res);
 });
 
 router.get("/id=:id", [auth, viewer], (req, res) => {
