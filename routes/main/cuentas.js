@@ -33,33 +33,56 @@ router.get("/nombre=:nombre&tag=:tag", [auth, viewer], (req, res) => {
     // recibimos el nombre de invocador a partir de su nombre
     const { nombre, tag } = req.params;
 
-    axios.get(`https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${nombre}/${tag}?api_key=${RIOT_API}`).then((cuentaRiot) => {
-        if (cuentaRiot.data.puuid && cuentaRiot.data.gameName) {
-            const sqlSelect = "SELECT invocador, tag, puuid_lol FROM cuentas_lol WHERE invocador = ? AND tag = ?";
-            db.query(sqlSelect, [nombre, tag], (err, result) => {
-                if (err) {
-                    res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
-                } else {
-                    if (result.length === 0) {
-                        res.send({ status: 200, success: true, result: cuentaRiot.data, existe: false });
+    axios
+        .get(`https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${nombre}/${tag}?api_key=${RIOT_API}`).then((cuentaRiot) => {
+            if (cuentaRiot.data.puuid && cuentaRiot.data.gameName) {
+                const sqlSelect = "SELECT invocador, tag, puuid_lol FROM cuentas_lol WHERE invocador = ? AND tag = ?";
+                db.query(sqlSelect, [nombre, tag], (err, result) => {
+                    if (err) {
+                        res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
                     } else {
-                        res.send({ status: 200, success: true, result: result, existe: true });
+                        if (result.length === 0) {
+                            res.send({ status: 200, success: true, result: cuentaRiot.data, existe: false });
+                        } else {
+                            res.send({ status: 200, success: true, result: result, existe: true });
+                        }
                     }
-                }
-            });
-        } else {
-            res.send({ status: 404, success: false, reason: "La cuenta no existe.", existe: false });
-        }
-    });
+                });
+            } else {
+                res.send({ status: 404, success: false, reason: "La cuenta no existe.", existe: false });
+            }
+        })
+        .catch((err) => {
+            res.send({ status: 500, success: false, reason: "Problema con la API de Riot.", error: err.response.statusText });
+        });
+});
+
+router.get("/puuid=:puuid", [auth, viewer], (req, res) => {
+    // GET /cuentas/puuid=:puuid
+    // recibimos datos de la cuenta a partir de su puuid de LoL
+    const { puuid } = req.params;
+
+    axios
+        .get(`https://europe.api.riotgames.com/riot/account/v1/accounts/by-puuid/${puuid}?api_key=${RIOT_API}`).then((cuentaRiot) => {
+            if (cuentaRiot.data.puuid && cuentaRiot.data.gameName) {
+                res.send({ status: 200, success: true, result: cuentaRiot.data, existe: true });
+            } else {
+                res.send({ status: 404, success: false, reason: "La cuenta no existe.", existe: false });
+            }
+        })
+        .catch((err) => {
+            console.log(err.response.statusText);
+            res.send({ status: 500, success: false, reason: "Problema con la API de Riot.", error: err.response.statusText });
+        });
 });
 
 router.post("/", [auth, self], async (req, res) => {
     // POST /cuentas
     // creamos un usuario
-    const { id_usuario, invocador, tag, puuid, lineaprincipal, lineasecundaria } = req.body;
+    const { id_usuario, invocador, tag, puuid, linea_principal, linea_secundaria } = req.body;
 
     const sql = "INSERT INTO `cuentas_lol` (`id_cuenta`, `id_usuario`, `id_juego`, `invocador`, `tag`, `puuid_lol`, `linea_principal`, `linea_secundaria`) VALUES (NULL, ?, 1, ?, ?, ?, ?, ?)";
-    db.query(sql, [id_usuario, invocador, tag, puuid, lineaprincipal, lineasecundaria], (err, result) => {
+    db.query(sql, [id_usuario, invocador, tag, puuid, linea_principal, linea_secundaria], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
