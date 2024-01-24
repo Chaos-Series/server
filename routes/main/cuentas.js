@@ -17,7 +17,7 @@ const RIOT_API = "RGAPI-48c2e07c-b903-4720-be64-d3ba9a416206";
 // *************************
 
 router.get("/", [auth, viewer], (req, res) => {
-    // /usuarios
+    // GET /cuentas
     // recibimos todos los usuarios
     const sqlSelect = "SELECT id_cuenta, invocador, puuid_lol FROM cuentas_lol";
     db.query(sqlSelect, (err, result) => {
@@ -30,7 +30,7 @@ router.get("/", [auth, viewer], (req, res) => {
 });
 
 router.get("/nombre=:nombre&tag=:tag", [auth, viewer], (req, res) => {
-    // /cuenta/nombre=:nombre
+    // GET /cuentas/nombre=:nombre
     // recibimos el nombre de invocador a partir de su nombre
     const nombre = req.params.nombre;
     const tag = req.params.tag;
@@ -56,7 +56,7 @@ router.get("/nombre=:nombre&tag=:tag", [auth, viewer], (req, res) => {
 });
 
 router.post("/", [auth, self], async (req, res) => {
-    // /crearcuenta
+    // POST /cuentas
     // creamos un usuario
     idusuario = req.body.id_usuario;
     invocador = req.body.invocador;
@@ -77,7 +77,7 @@ router.post("/", [auth, self], async (req, res) => {
 });
 
 router.put("/", [auth, self], async (req, res) => {
-    // /cuentas
+    // PUT /cuentas
     // modificamos una cuenta de un usuario
     id = req.body.id;
     invocador = req.body.invocador;
@@ -97,7 +97,7 @@ router.put("/", [auth, self], async (req, res) => {
 });
 
 router.delete("/", [auth, self], async (req, res) => {
-    // /eliminarcuenta
+    // DELETE /cuentas
     // eliminamos una cuenta a partir de su id
     id_cuenta = req.body.id_cuenta;
 
