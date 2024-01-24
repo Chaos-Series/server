@@ -17,7 +17,7 @@ const RIOT_API = "RGAPI-48c2e07c-b903-4720-be64-d3ba9a416206";
 
 router.get("/", [auth, viewer], (req, res) => {
     // GET /cuentas
-    // recibimos todos los usuarios
+    // recibimos todas las cuentas de LoL de todos los usuarios
     const sqlSelect = "SELECT id_cuenta, invocador, puuid_lol FROM cuentas_lol";
     db.query(sqlSelect, (err, result) => {
         if (err) {
