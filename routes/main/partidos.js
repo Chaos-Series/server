@@ -31,7 +31,7 @@ router.get("/", (req, res) => {
 router.get("/partidos", [auth, viewer], (req, res) => {
   // GET /partidos/partidos
   // recibimos todos los partidos
-  const sqlSelect = "SELECT * FROM partidos ORDER BY fecha DESC LIMIT 5 WHERE tipo = 0";
+  const sqlSelect = "SELECT * FROM partidos WHERE tipo = 0 ORDER BY fecha DESC LIMIT 5";
   db.query(sqlSelect, (err, result) => {
     if (err) {
       res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
@@ -89,8 +89,8 @@ router.get("/id=:id", [auth, viewer], (req, res) => {
 
 router.post("/inhouses", [auth, admin], async (req, res) => {
   // POST /partidos/inhouses
-  // creamos una inhouse
-  const fecha = req.body.fecha;
+  // creamos una inhouse o un partido
+  const { fecha, tipo } = req.body;
   axios
     .post("https://americas.api.riotgames.com/lol/tournament/v5/codes?tournamentId=7188490&count=1&api_key=" + RIOT_API, {
       mapType: "SUMMONERS_RIFT",
@@ -99,8 +99,8 @@ router.post("/inhouses", [auth, admin], async (req, res) => {
       teamSize: 5,
     })
     .then((response) => {
-      const sql = "INSERT INTO partidos (tipo, fecha, codigo_torneo) VALUES (1, ?, ?)";
-      db.query(sql, [fecha, response.data], (err, result) => {
+      const sql = "INSERT INTO partidos (tipo, fecha, codigo_torneo) VALUES (?, ?, ?)";
+      db.query(sql, [tipo, fecha, response.data], (err, result) => {
         if (err) {
           res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
