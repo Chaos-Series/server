@@ -34,6 +34,19 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get("/partidos", [auth, viewer], (req, res) => {
+  // Partidos
+  // Recibimos todos los partidos (Ordenados desde la última fecha hacia abajo y limitado 5 registros)
+  const sqlSelect = "SELECT * FROM partidos ORDER BY fecha DESC LIMIT 5";
+  db.query(sqlSelect, (err, result) => {
+    if (err) {
+      res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
+    } else {
+      res.send({ status: 200, success: true, result: result });
+    }
+  });
+});
+
 router.get("/inhouses", [auth, viewer], (req, res) => {
   // /usuarios
   // recibimos todos los usuarios
