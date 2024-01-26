@@ -110,7 +110,7 @@ router.get("/equipo/id=:id", [auth, viewer], (req, res) => {
 });
 
 router.get("/cuentas/id=:id", [auth, viewer], (req, res) => {
-  ///usuarios/cuentas/id=:id
+  // usuarios/cuentas/id=:id
   //buscamos cuentas por id de usuario
   const id = req.params.id;
 
@@ -231,31 +231,17 @@ router.delete("/", [auth, admin], async (req, res) => {
   const sqlDeleteSesiones = "DELETE FROM sesiones WHERE id_usuario = ?";
   const sqlDeleteCuentas = "DELETE FROM cuentas_lol WHERE id_usuario = ?";
   const sqlDeleteUsuario = "DELETE FROM usuarios WHERE id_usuario = ?";
-  db.query(sqlDeleteLogs, [id], (err, result) => {
-    if (err) {
-      res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
-    } else {
-      db.query(sqlDeleteSesiones, [id], (err, result) => {
-        if (err) {
-          res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
-        } else {
-          db.query(sqlDeleteCuentas, [id], (err, result) => {
-            if (err) {
-              res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
-            } else {
-              db.query(sqlDeleteUsuario, [id], (err, result) => {
-                if (err) {
-                  res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
-                } else {
-                  res.send({ status: 200, success: true, result: result });
-                }
-              });
-            }
-          });
-        }
-      });
-    }
-  });
+
+  try {
+    db.query(sqlDeleteLogs, [id]);
+    db.query(sqlDeleteSesiones, [id]);
+    db.query(sqlDeleteCuentas, [id]);
+    db.query(sqlDeleteUsuario, [id]);
+
+    res.send({ status: 200, success: true });
+  } catch (err) {
+    res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
+  }
 });
 
 router.delete("/enlaces", [auth, self], async (req, res) => {
