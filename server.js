@@ -31,13 +31,12 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 app.use(cors({
     origin: (origin, callback) => {
-        if (allowedOrigins.includes(origin)) return callback(null, true);
-
-        if (!origin) return callback(null, true);
-
-        return callback(new Error("Acceso denegado."), false);
+        if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+        
+        callback(new Error("Acceso denegado."));
     },
 }));
+app.options('*', cors()) // habilitar Preflight de CORS
 
 // Importamos rutas
 const authRouter = require("./routes/auth");

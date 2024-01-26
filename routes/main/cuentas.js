@@ -1,7 +1,6 @@
 // Importamos dependencias
 const express = require("express");
 const axios = require("axios");
-
 // Importamos middlewares
 const auth = require("../../middleware/auth");
 const { admin, viewer, self } = require("../../middleware/roles");
@@ -17,8 +16,8 @@ const RIOT_API = "RGAPI-48c2e07c-b903-4720-be64-d3ba9a416206";
 // *************************
 
 router.get("/", [auth, viewer], (req, res) => {
-    // /usuarios
-    // recibimos todos los usuarios
+    // GET /cuentas
+    // recibimos todas las cuentas de LoL de todos los usuarios
     const sqlSelect = "SELECT id_cuenta, invocador, puuid_lol FROM cuentas_lol";
     db.query(sqlSelect, (err, result) => {
         if (err) {
@@ -30,44 +29,60 @@ router.get("/", [auth, viewer], (req, res) => {
 });
 
 router.get("/nombre=:nombre&tag=:tag", [auth, viewer], (req, res) => {
-    // /cuenta/nombre=:nombre
+    // GET /cuentas/nombre=:nombre
     // recibimos el nombre de invocador a partir de su nombre
-    const nombre = req.params.nombre;
-    const tag = req.params.tag;
+    const { nombre, tag } = req.params;
 
-    axios.get("https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/" + nombre + "/" + tag + "?api_key=" + RIOT_API).then((cuentaRiot) => {
-        if (cuentaRiot.data["puuid"] != null && cuentaRiot.data["gameName"] != null) {
-            const sqlSelect = "SELECT invocador, tag, puuid_lol FROM cuentas_lol WHERE invocador = ? AND tag = ?";
-            db.query(sqlSelect, [nombre, tag], (err, result) => {
-                if (err) {
-                    res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
-                } else {
-                    if (result.length == 0) {
-                        res.send({ status: 200, success: true, result: cuentaRiot.data, existe: false });
+    axios
+        .get(`https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${nombre}/${tag}?api_key=${RIOT_API}`).then((cuentaRiot) => {
+            if (cuentaRiot.data.puuid && cuentaRiot.data.gameName) {
+                const sqlSelect = "SELECT invocador, tag, puuid_lol FROM cuentas_lol WHERE invocador = ? AND tag = ?";
+                db.query(sqlSelect, [nombre, tag], (err, result) => {
+                    if (err) {
+                        res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
                     } else {
-                        res.send({ status: 200, success: true, result: result, existe: true });
+                        if (result.length === 0) {
+                            res.send({ status: 200, success: true, result: cuentaRiot.data, existe: false });
+                        } else {
+                            res.send({ status: 200, success: true, result: result, existe: true });
+                        }
                     }
-                }
-            });
-        } else {
-            res.send({ status: 404, success: false, reason: "La cuenta no existe.", existe: false });
-        }
-    });
+                });
+            } else {
+                res.send({ status: 404, success: false, reason: "La cuenta no existe.", existe: false });
+            }
+        })
+        .catch((err) => {
+            res.send({ status: 500, success: false, reason: "Problema con la API de Riot.", error: err.response.statusText });
+        });
+});
+
+router.get("/puuid=:puuid", [auth, viewer], (req, res) => {
+    // GET /cuentas/puuid=:puuid
+    // recibimos datos de la cuenta a partir de su puuid de LoL
+    const { puuid } = req.params;
+
+    axios
+        .get(`https://europe.api.riotgames.com/riot/account/v1/accounts/by-puuid/${puuid}?api_key=${RIOT_API}`).then((cuentaRiot) => {
+            if (cuentaRiot.data.puuid && cuentaRiot.data.gameName) {
+                res.send({ status: 200, success: true, result: cuentaRiot.data, existe: true });
+            } else {
+                res.send({ status: 404, success: false, reason: "La cuenta no existe.", existe: false });
+            }
+        })
+        .catch((err) => {
+            console.log(err.response.statusText);
+            res.send({ status: 500, success: false, reason: "Problema con la API de Riot.", error: err.response.statusText });
+        });
 });
 
 router.post("/", [auth, self], async (req, res) => {
-    // /crearcuenta
+    // POST /cuentas
     // creamos un usuario
-    idusuario = req.body.id_usuario;
-    invocador = req.body.invocador;
-    tag = req.body.tag;
-    puuid = req.body.puuid;
-    lineaprincipal = req.body.linea_principal;
-    lineasecundaria = req.body.linea_secundaria;
+    const { id_usuario, invocador, tag, puuid, linea_principal, linea_secundaria } = req.body;
 
-    const sql =
-        "INSERT INTO `cuentas_lol` (`id_cuenta`, `id_usuario`, `id_juego`, `invocador`, `tag`, `puuid_lol`, `linea_principal`, `linea_secundaria`) VALUES (NULL, ?, 1, ?, ?, ?, ?, ?)";
-    db.query(sql, [idusuario, invocador, tag, puuid, lineaprincipal, lineasecundaria], (err, result) => {
+    const sql = "INSERT INTO `cuentas_lol` (`id_cuenta`, `id_usuario`, `id_juego`, `invocador`, `tag`, `puuid_lol`, `linea_principal`, `linea_secundaria`) VALUES (NULL, ?, 1, ?, ?, ?, ?, ?)";
+    db.query(sql, [id_usuario, invocador, tag, puuid, linea_principal, linea_secundaria], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
@@ -77,14 +92,12 @@ router.post("/", [auth, self], async (req, res) => {
 });
 
 router.put("/", [auth, self], async (req, res) => {
-    // /cuenta
-    // modificamos un usuario
-    id = req.body.id;
-    puuid_lol = req.body.puuid_lol;
-    invocador = req.body.invocador;
+    // PUT /cuentas
+    // modificamos una cuenta de un usuario
+    const { id, invocador, tag, puuid_lol, linea_principal, linea_secundaria } = req.body;
 
-    const sql = "UPDATE cuentas_lol SET invocador = ?, puuid_lol = ? WHERE id_cuenta = ?";
-    db.query(sql, [invocador, puuid_lol, id], (err, result) => {
+    const sql = "UPDATE cuentas_lol SET invocador = ?, puuid_lol = ?, linea_principal = ?, linea_secundaria = ?, tag = ? WHERE id_cuenta = ?";
+    db.query(sql, [invocador, puuid_lol, linea_principal, linea_secundaria, tag, id], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
@@ -94,9 +107,9 @@ router.put("/", [auth, self], async (req, res) => {
 });
 
 router.delete("/", [auth, self], async (req, res) => {
-    // /eliminarcuenta
+    // DELETE /cuentas
     // eliminamos una cuenta a partir de su id
-    id_cuenta = req.body.id_cuenta;
+    const { id_cuenta } = req.body;
 
     const sqlDelete = "DELETE FROM cuentas_lol WHERE id_cuenta = ?";
     db.query(sqlDelete, [id_cuenta], (err, result) => {
