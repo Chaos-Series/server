@@ -3,15 +3,11 @@ const express = require("express");
 
 // Importamos middlewares
 const auth = require("../../middleware/auth");
-const { admin, viewer } = require("../../middleware/roles");
+const { viewer } = require("../../middleware/roles");
 const db = require("../../middleware/db");
 
 // Set del router
 const router = express.Router();
-
-// *************************
-// Set de todos los endpoints
-// *************************
 
 router.get("/", [auth, viewer], (req, res) => {
     // /ligas
@@ -21,10 +17,9 @@ router.get("/", [auth, viewer], (req, res) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result: result });
+            res.send({ status: 200, success: true, result });
         }
     });
 });
 
-// Exportamos el router
 module.exports = router;
