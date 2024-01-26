@@ -7,7 +7,7 @@ const forbidden = ((res) => {
 })
 
 function admin(req, res, next) {
-    // if (req.user.rol < 20) return forbidden(res);
+    if (req.user.rol < 20) return forbidden(res);
     next();
 }
 
