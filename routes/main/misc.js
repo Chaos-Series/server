@@ -9,7 +9,7 @@ const sendEmail = require("../../utils/sendEmail");
 const router = express.Router();
 
 router.post("/enviarlog", async (req, res) => {
-    // POST /enviarlog
+    // POST /misc/enviarlog
     // creamos un log
     const { id_usuario, fecha, accion, info } = req.body;
 
@@ -24,7 +24,7 @@ router.post("/enviarlog", async (req, res) => {
 });
 
 router.post("/enviarcontacto", async (req, res) => {
-    // POST /enviarcontacto
+    // POST /misc/enviarcontacto
     // enviamos un email de contacto
     const { nombre, correo, asunto, mensaje } = req.body;
 
