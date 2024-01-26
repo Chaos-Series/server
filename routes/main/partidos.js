@@ -31,7 +31,7 @@ router.get("/", (req, res) => {
 router.get("/partidos", [auth, viewer], (req, res) => {
   // GET /partidos/partidos
   // recibimos todos los partidos
-  const sqlSelect = "SELECT * FROM partidos WHERE tipo = 0 ORDER BY fecha DESC LIMIT 5";
+  const sqlSelect = "SELECT * FROM partidos WHERE tipo = 0 ORDER BY fecha";
   db.query(sqlSelect, (err, result) => {
     if (err) {
       res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
