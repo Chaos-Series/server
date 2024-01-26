@@ -18,16 +18,10 @@ const storage = multer.diskStorage({
     },
 });
 
-const upload = multer({
-    storage: storage,
-});
+const upload = multer({ storage });
 
 // Set del router
 const router = express.Router();
-
-// *************************
-// Set de todos los endpoints
-// *************************
 
 router.get("/", [auth, viewer], (req, res) => {
     // /equipos
@@ -37,7 +31,7 @@ router.get("/", [auth, viewer], (req, res) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result: result });
+            res.send({ status: 200, success: true, result });
         }
     });
 });
@@ -46,30 +40,28 @@ router.get("/id=:id", [auth, viewer], (req, res) => {
     // /equipos/id=:id
     // buscamos equipo por id
     const id = req.params.id;
-
     const sqlSelect =
         "SELECT * FROM equipos LEFT JOIN ligas ON equipos.id_liga = ligas.id_liga LEFT JOIN temporadas ON equipos.id_temporada = temporadas.id_temporada WHERE equipos.id_equipo = ?";
     db.query(sqlSelect, [id], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result: result });
+            res.send({ status: 200, success: true, result });
         }
     });
 });
 
 router.get("/nombre=:nombre", [auth, viewer], (req, res) => {
     // /equipos/nombre=:nombre
-    // buscamos equipo por id
+    // buscamos equipo por nombre
     const nombre = req.params.nombre;
-
     const sqlSelect =
         "SELECT * FROM equipos LEFT JOIN ligas ON equipos.id_liga = ligas.id_liga LEFT JOIN temporadas ON equipos.id_temporada = temporadas.id_temporada WHERE equipos.nombre_equipo = ?";
     db.query(sqlSelect, [nombre], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result: result });
+            res.send({ status: 200, success: true, result });
         }
     });
 });
@@ -78,65 +70,57 @@ router.get("/usuarios/id=:id", [auth, viewer], (req, res) => {
     // /equipos/usuarios/id=:id
     // recibimos todos los usuarios dentro de un equipo a partir de su id
     const id = req.params.id;
-
     const sqlSelect = "SELECT id_usuario, id_equipo, id_discord, nombre_usuario, apellido_usuario, nick_usuario, edad, rol, icono, usuario_activado, circuitotormenta, twitter, discord FROM usuarios WHERE id_equipo = ?";
     db.query(sqlSelect, [id], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result: result });
+            res.send({ status: 200, success: true, result });
         }
     });
 });
 
 router.post("/", [auth, admin], upload.single("imagenEquipo"), async (req, res) => {
-    // /crearequipo
-    // crearmos un equipo
-    image = req.file;
-    nombre = req.body.nombre;
-    acronimo = req.body.acronimo;
-
+    // /equipos
+    // crear un equipo
+    const image = req.file;
+    const { nombre, acronimo } = req.body;
     const sql = "INSERT INTO `equipos` (`nombre_equipo`, `logo_equipo`, `acronimo_equipo`) VALUES (?, ?, ?)";
     db.query(sql, [nombre, image.filename, acronimo], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result: result });
+            res.send({ status: 200, success: true, result });
         }
     });
 });
 
 router.put("/", [auth, admin], async (req, res) => {
-    // /modificarequipo
-    // modificamos un equipo a partir de su id
-    id = req.body.id;
-    columna = req.body.columna;
-    valor = req.body.valor;
-
+    // /equipos
+    // modificar un equipo
+    const { id, columna, valor } = req.body;
     const sql = "UPDATE equipos SET `" + columna + "` = ? WHERE id_equipo = ?";
     db.query(sql, [valor, id], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result: result });
+            res.send({ status: 200, success: true, result });
         }
     });
 });
 
 router.delete("/", [auth, admin], async (req, res) => {
-    // /borrarequipo
+    // /equipos
     // eliminamos un equipo a partir de su id
-    id = req.body.id;
-
+    const id = req.body.id;
     const sql = "DELETE FROM equipos WHERE id_equipo = ?";
     db.query(sql, [id], (err, result) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result: result });
+            res.send({ status: 200, success: true, result });
         }
     });
 });
 
-// Exportamos el router
 module.exports = router;
