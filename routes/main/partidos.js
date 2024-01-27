@@ -58,8 +58,9 @@ router.get("/inhouses/id=:id", [auth, viewer], (req, res) => {
   // GET /partidos/inhouses/id=:id
   // recibimos todas las inhouses ordenadas por progreso y fecha basadas en el id
   const id = req.params.id;
-  const sqlSelect = "SELECT * FROM partidos WHERE id_partido = ? AND tipo = 1 ORDER BY progreso ASC, fecha ASC";
-  db.query(sqlSelect, [id], (err, result) => {
+  const tipo = req.params.tipo;
+  const sqlSelect = "SELECT * FROM partidos WHERE id_partido = ? AND tipo = ? ORDER BY progreso ASC, fecha ASC";
+  db.query(sqlSelect, [id, tipo], (err, result) => {
     if (err) {
       res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
     } else {
