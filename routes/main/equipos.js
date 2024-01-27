@@ -61,7 +61,7 @@ router.get("/nombre=:nombre", [auth, viewer], (req, res) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result });
+            res.send({ status: 200, success: true, result: result });
         }
     });
 });
@@ -75,7 +75,7 @@ router.get("/usuarios/id=:id", [auth, viewer], (req, res) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result });
+            res.send({ status: 200, success: true, result: result });
         }
     });
 });
@@ -90,7 +90,7 @@ router.post("/", [auth, admin], upload.single("imagenEquipo"), async (req, res) 
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result });
+            res.send({ status: 200, success: true, result: result });
         }
     });
 });
@@ -104,7 +104,7 @@ router.put("/", [auth, admin], async (req, res) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result });
+            res.send({ status: 200, success: true, result: result });
         }
     });
 });
@@ -118,7 +118,7 @@ router.delete("/", [auth, admin], async (req, res) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result });
+            res.send({ status: 200, success: true, result: result });
         }
     });
 });

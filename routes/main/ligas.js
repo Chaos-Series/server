@@ -17,7 +17,7 @@ router.get("/", [auth, viewer], (req, res) => {
         if (err) {
             res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
         } else {
-            res.send({ status: 200, success: true, result });
+            res.send({ status: 200, success: true, result: result });
         }
     });
 });
