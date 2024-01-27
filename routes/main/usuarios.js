@@ -31,6 +31,8 @@ router.get("/", (req, res) => {
 });
 
 router.get("/jugadores", async (req, res) => {
+  // /usuarios/jugadores
+  // recibimos todos los jugadores
   const sqlSelect =
     "SELECT id_usuario FROM usuarios WHERE rol = 1 AND nombre_usuario != 'NECESITA MODIFICACIÓN' AND apellido_usuario != 'NECESITA MODIFICACIÓN'";
 
@@ -140,8 +142,8 @@ router.get("/enlaces/id=:id", [auth, viewer], (req, res) => {
 });
 
 router.post("/", [auth, admin], async (req, res) => {
-  // /crearusuario
-  // crearmos un usuario
+  // POST /usuarios
+  // creamos un usuario
   nombre = req.body.nombre;
   apellido = req.body.apellido;
   nick = req.body.nick;
@@ -162,7 +164,7 @@ router.post("/", [auth, admin], async (req, res) => {
 });
 
 router.put("/", [auth, self], async (req, res) => {
-  // /modificarusuario
+  // PUT /usuarios
   // modificamos un usuario
   id_usuario = req.body.id_usuario;
   columna = req.body.columna;
@@ -179,7 +181,7 @@ router.put("/", [auth, self], async (req, res) => {
 });
 
 router.put("/icono", [auth, admin], async (req, res) => {
-  // /usuario/icono
+  // PUT /usuario/icono
   // cambiamos icono de un usuario a partir de su id
   id = req.body.id;
   icono = req.body.icono;
@@ -195,7 +197,7 @@ router.put("/icono", [auth, admin], async (req, res) => {
 });
 
 router.put("/enlaces", [auth, self], async (req, res) => {
-  // /usuarios/enlaces
+  // PUT /usuarios/enlaces
   // cambiamos enlace de un usuario
   const id_usuario = req.body.id_usuario;
   const columna = req.body.columna;
@@ -223,7 +225,7 @@ router.put("/enlaces", [auth, self], async (req, res) => {
 });
 
 router.delete("/", [auth, admin], async (req, res) => {
-  // /borrarusuario
+  // DELETE /usuarios
   // eliminamos un usuario a partir de su id
   id = req.body.id;
 
@@ -245,7 +247,7 @@ router.delete("/", [auth, admin], async (req, res) => {
 });
 
 router.delete("/enlaces", [auth, self], async (req, res) => {
-  // /usuarios/enlaces
+  // DELETE /usuarios/enlaces
   // eliminamos enlace de un usuario
   const id_usuario = req.body.id_usuario;
   const columna = req.body.columna;
