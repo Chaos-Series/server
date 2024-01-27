@@ -74,8 +74,7 @@ router.get("/nombre=:nombre", (req, res) => {
 router.get("/nombre=:nombre/contra=:contra", (req, res) => {
   // /usuarios/nombre=:nombre
   // recibimos usuario por nombre
-  const nombre = req.params.nombre;
-  const contra = req.params.contra;
+  const { nombre, contra } = req.params;
 
   const sqlComprobarContra = "SELECT nick_usuario, contra FROM usuarios WHERE nick_usuario = ?";
   db.query(sqlComprobarContra, [nombre], (err, result) => {
@@ -144,17 +143,11 @@ router.get("/enlaces/id=:id", [auth, viewer], (req, res) => {
 router.post("/", [auth, admin], async (req, res) => {
   // POST /usuarios
   // creamos un usuario
-  nombre = req.body.nombre;
-  apellido = req.body.apellido;
-  nick = req.body.nick;
-  edad = req.body.edad;
-  rol = req.body.rol ? req.body.rol : 0;
-
-  contra = req.body.contra;
+  const { nombre, apellido, nick, edad, rol, contra } = req.body;
 
   const sql =
     "INSERT INTO `usuarios` (`id_usuario`, `id_equipo`, `id_discord`, `nombre_usuario`, `apellido_usuario`, `nick_usuario`, `edad`, `rol`, `contra`) VALUES (NULL, NULL, NULL, ?, ?, ?, ?, ?, ?)";
-  db.query(sql, [nombre, apellido, nick, edad, rol, contra], (err, result) => {
+  db.query(sql, [nombre, apellido, nick, edad, rol ?? 0, contra], (err, result) => {
     if (err) {
       res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
     } else {
@@ -166,9 +159,7 @@ router.post("/", [auth, admin], async (req, res) => {
 router.put("/", [auth, self], async (req, res) => {
   // PUT /usuarios
   // modificamos un usuario
-  id_usuario = req.body.id_usuario;
-  columna = req.body.columna;
-  valor = req.body.valor;
+  const { id_usuario, columna, valor } = req.body;
 
   const sql = "UPDATE usuarios SET `" + columna + "` = ? WHERE id_usuario = ?";
   db.query(sql, [valor, id_usuario], (err, result) => {
@@ -183,8 +174,7 @@ router.put("/", [auth, self], async (req, res) => {
 router.put("/icono", [auth, admin], async (req, res) => {
   // PUT /usuario/icono
   // cambiamos icono de un usuario a partir de su id
-  id = req.body.id;
-  icono = req.body.icono;
+  const { id, icono } = req.body;
 
   const sql = "UPDATE usuarios SET icono = ? WHERE id_usuario = ?";
   db.query(sql, [icono, id], (err, result) => {
@@ -199,9 +189,7 @@ router.put("/icono", [auth, admin], async (req, res) => {
 router.put("/enlaces", [auth, self], async (req, res) => {
   // PUT /usuarios/enlaces
   // cambiamos enlace de un usuario
-  const id_usuario = req.body.id_usuario;
-  const columna = req.body.columna;
-  const valor = req.body.valor;
+  const { id_usuario, columna, valor } = req.body;
 
   const sqlComprobar = "SELECT " + columna + " FROM usuarios WHERE " + columna + " = ?";
   const sqlUpdate = "UPDATE usuarios SET " + columna + " = ? WHERE id_usuario = ?";
