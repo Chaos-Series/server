@@ -237,8 +237,7 @@ router.delete("/", [auth, admin], async (req, res) => {
 router.delete("/enlaces", [auth, self], async (req, res) => {
   // DELETE /usuarios/enlaces
   // eliminamos enlace de un usuario
-  const id_usuario = req.body.id_usuario;
-  const columna = req.body.columna;
+  const { id_usuario, columna } = req.body;
 
   const sqlDelete = "UPDATE usuarios SET " + columna + " = null WHERE id_usuario = ?";
 
