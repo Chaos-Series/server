@@ -50,6 +50,7 @@ const routes = [
     { path: "/equipos", router: require("./routes/main/equipos") },
     { path: "/cuentas", router: require("./routes/main/cuentas") },
     { path: "/emparejamientos", router: require("./routes/main/emparejamientos") },
+    { path: "/clasificacion", router: require("./routes/main/clasificacion") },
 ];
 
 routes.forEach(route => {
