@@ -9,7 +9,7 @@ const db = require("../../middleware/db");
 
 // Set del router
 const router = express.Router();
-const RIOT_API = "RGAPI-48c2e07c-b903-4720-be64-d3ba9a416206";
+const RIOT_API = process.env.RIOT_API;
 
 router.get("/", [auth, viewer], (req, res) => {
     // GET /cuentas
