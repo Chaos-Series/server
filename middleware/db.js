@@ -1,6 +1,5 @@
 const mysql = require("mysql");
 
-console.log(process.env.DB_HOST);
 const db = mysql.createPool({
     //crear la conexion a la base de datos
     host: process.env.DB_HOST,
