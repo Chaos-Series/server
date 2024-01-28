@@ -38,27 +38,24 @@ app.use(cors({
 }));
 app.options('*', cors()) // habilitar Preflight de CORS
 
-// Importamos rutas
-const authRouter = require("./routes/auth");
-const usuariosRouter = require("./routes/main/usuarios");
-const temporadasRouter = require("./routes/main/temporadas");
-const riotRouter = require("./routes/main/riot");
-const partidosRouter = require("./routes/main/partidos")
-const miscRouter = require("./routes/main/misc");
-const ligasRouter = require("./routes/main/ligas");
-const equiposRouter = require("./routes/main/equipos")
-const cuentasRouter = require("./routes/main/cuentas");
+// Set de rutas
+const routes = [
+    { path: "/auth", router: require("./routes/auth") },
+    { path: "/usuarios", router: require("./routes/main/usuarios") },
+    { path: "/temporadas", router: require("./routes/main/temporadas") },
+    { path: "/riot", router: require("./routes/main/riot") },
+    { path: "/partidos", router: require("./routes/main/partidos") },
+    { path: "/misc", router: require("./routes/main/misc") },
+    { path: "/ligas", router: require("./routes/main/ligas") },
+    { path: "/equipos", router: require("./routes/main/equipos") },
+    { path: "/cuentas", router: require("./routes/main/cuentas") },
+    { path: "/emparejamientos", router: require("./routes/main/emparejamientos") },
+    { path: "/clasificacion", router: require("./routes/main/clasificacion") },
+];
 
-// Seteamos rutas
-app.use("/auth", authRouter);
-app.use("/usuarios", usuariosRouter);
-app.use("/temporadas", temporadasRouter);
-app.use("/riot", riotRouter);
-app.use("/partidos", partidosRouter)
-app.use("/misc", miscRouter);
-app.use("/ligas", ligasRouter);
-app.use("/equipos", equiposRouter);
-app.use("/cuentas", cuentasRouter);
+routes.forEach(route => {
+    app.use(route.path, route.router);
+});
 
 // Iniciamos servidor
 app.listen(port, () => {
