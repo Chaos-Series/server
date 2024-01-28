@@ -23,7 +23,7 @@ const upload = multer({ storage });
 // Set del router
 const router = express.Router();
 
-router.get("/", [auth, viewer], (req, res) => {
+router.get("/", (req, res) => {
     // /equipos
     // recibimos todos los equipos
     const sqlSelect = "SELECT * FROM equipos";
@@ -36,7 +36,7 @@ router.get("/", [auth, viewer], (req, res) => {
     });
 });
 
-router.get("/id=:id", [auth, viewer], (req, res) => {
+router.get("/id=:id", (req, res) => {
     // /equipos/id=:id
     // buscamos equipo por id
     const id = req.params.id;
@@ -51,7 +51,7 @@ router.get("/id=:id", [auth, viewer], (req, res) => {
     });
 });
 
-router.get("/nombre=:nombre", [auth, viewer], (req, res) => {
+router.get("/nombre=:nombre", (req, res) => {
     // /equipos/nombre=:nombre
     // buscamos equipo por nombre
     const nombre = req.params.nombre;
@@ -66,7 +66,7 @@ router.get("/nombre=:nombre", [auth, viewer], (req, res) => {
     });
 });
 
-router.get("/usuarios/id=:id", [auth, viewer], (req, res) => {
+router.get("/usuarios/id=:id", (req, res) => {
     // /equipos/usuarios/id=:id
     // recibimos todos los usuarios dentro de un equipo a partir de su id
     const id = req.params.id;
