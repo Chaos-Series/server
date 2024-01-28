@@ -1,0 +1,34 @@
+name: Auto PR dev/ghost
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create_pull_request:
+    permissions:
+        pull-requests: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
+
+      - name: Crear pull request
+        run: |
+            title="Fusionar dev/ghost ($(git rev-parse --short=7 remotes/origin/dev))"
+            
+            body="
+            Esta pull request se ha creado automáticamente para fusionar \`dev/ghost\` en \`development\`.
+                
+            **Último commit a [\`dev/ghost\`](https://github.com/Chaos-Series/panel/tree/dev/ghost):** https://github.com/Chaos-Series/panel/commit/$(git rev-parse remotes/origin/dev)
+            "
+            
+            gitLog=$(git log development..remotes/origin/dev/ghost)
+            
+            if [ -n "$gitLog" ]; then
+                gh pr create -B "development" -H "dev/ghost" --title "$title" --body "$body"
+            fi
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
