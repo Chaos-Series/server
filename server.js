@@ -3,7 +3,6 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const bodyParser = require("body-parser")
 const cors = require("cors");
-require("dotenv").config();
 
 // Set del servidor
 const app = express();
@@ -38,6 +37,7 @@ app.use(cors({
     },
 }));
 app.options('*', cors()) // habilitar Preflight de CORS
+app.disable('x-powered-by'); // deshabilitar header X-Powered-By por seguridad
 
 // Set de rutas
 const routes = [
