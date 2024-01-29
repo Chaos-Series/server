@@ -3,6 +3,7 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const bodyParser = require("body-parser")
 const cors = require("cors");
+require("dotenv").config();
 
 // Set del servidor
 const app = express();
