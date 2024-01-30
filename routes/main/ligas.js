@@ -9,9 +9,14 @@ const db = require("../../middleware/db");
 // Set del router
 const router = express.Router();
 
+/**
+ * Obtiene todas las ligas.
+ * 
+ * @route GET /ligas
+ * 
+ * @returns {object} Todas las ligas.
+ */
 router.get("/", [auth, viewer], (req, res) => {
-    // /ligas
-    //buscamos todas las ligas
     const sqlSelect = "SELECT * FROM ligas";
     db.query(sqlSelect, (err, result) => {
         if (err) {

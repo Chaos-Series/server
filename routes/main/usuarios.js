@@ -16,10 +16,14 @@ const router = express.Router();
 // Set up the route handlers
 // *************************
 
+/**
+ * Obtiene todos los usuarios.
+ * 
+ * @route GET /usuarios
+ * 
+ * @returns {object} Todos los usuarios.
+ */
 router.get("/", (req, res) => {
-  // /usuarios
-  // recibimos todos los usuarios
-
   const sqlSelect = "SELECT * FROM usuarios";
   db.query(sqlSelect, (err, result) => {
     if (err) {
@@ -30,22 +34,41 @@ router.get("/", (req, res) => {
   });
 });
 
+
+/**
+ * Obtiene todos los jugadores con su información, cuentas, equipo, y estadísticas.
+ * 
+ * @route GET /usuarios/jugadores
+ * 
+ * @returns {object} Todos los jugadores.
+ */
 router.get("/jugadores", async (req, res) => {
-  // Retorna la Lista de Jugadores con => (Información, Cuentas, Equipo, Estadística)
     returnPlayerList(res);
 });
 
-router.get("/id=:id", [auth, viewer], (req, res) => {
-  // /usuarios/id=:id
-  // recibimos usuario por id
-  const id = req.params.id;
 
+/**
+ * Obtiene toda la información de un usuario por su ID.
+ * 
+ * @route GET /usuarios/id=:id
+ * 
+ * @returns {object} La información del usuario.
+ */
+router.get("/id=:id", [auth, viewer], (req, res) => {
+  const id = req.params.id;
   returnPlayer(id, res);
 });
 
+
+/**
+ * Obtiene toda la información de un usuario por su nombre.
+ * 
+ * @route GET /usuarios/nombre=:nombre
+ * 
+ * @param {string} nombre - El nombre del usuario.
+ * @returns {object} La información del usuario.
+ */
 router.get("/nombre=:nombre", (req, res) => {
-  // /usuarios/nombre=:nombre
-  // recibimos usuario por nombre
   const nombre = req.params.nombre;
 
   const sqlSelect = "SELECT nombre_usuario FROM usuarios WHERE nick_usuario = ?";
@@ -58,9 +81,17 @@ router.get("/nombre=:nombre", (req, res) => {
   });
 });
 
+
+/**
+ * Obtiene el nombre de usuario de un usuario por su nombre y contraseña.
+ * 
+ * @route GET /usuarios/nombre=:nombre/contra=:contra
+ * 
+ * @param {string} nombre - El nombre del usuario.
+ * @param {string} contra - La contraseña del usuario.
+ * @returns {string} El nombre de usuario.
+ */
 router.get("/nombre=:nombre/contra=:contra", (req, res) => {
-  // /usuarios/nombre=:nombre
-  // recibimos usuario por nombre
   const { nombre, contra } = req.params;
 
   const sqlComprobarContra = "SELECT nick_usuario, contra FROM usuarios WHERE nick_usuario = ?";
@@ -81,10 +112,17 @@ router.get("/nombre=:nombre/contra=:contra", (req, res) => {
   });
 });
 
+
+/**
+ * Obtiene el equipo de un usuario por su ID.
+ * 
+ * @route GET /usuarios/equipo/id=:id
+ * 
+ * @param {number} id - El ID del usuario.
+ * @returns {object} El equipo del usuario.
+ */
 router.get("/equipo/id=:id", [auth, viewer], (req, res) => {
-  // /usuarios/equipo/id=:id
-  //buscamos equipo de un usuario por su misma id
-  const id = req.params.id;
+  const { id } = req.params;
 
   const sqlSelect =
     "SELECT * FROM equipos LEFT JOIN usuarios ON equipos.id_equipo = usuarios.id_equipo LEFT JOIN ligas ON equipos.id_liga = ligas.id_liga LEFT JOIN temporadas ON equipos.id_temporada = temporadas.id_temporada WHERE usuarios.id_usuario = ?";
