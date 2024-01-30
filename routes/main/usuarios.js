@@ -35,6 +35,48 @@ router.get("/jugadores", async (req, res) => {
     returnPlayerList(res);
 });
 
+router.get("/jugadores/equipo=:id", async (req, res) => {
+  // /usuarios/jugadores/equipo=id
+  // recibimos todos los jugadores de un equipo por el id de equipo
+
+  const idequipo = req.params.id;
+
+  const sqlSelect =
+    "SELECT id_usuario FROM usuarios WHERE rol = 1 AND id_equipo = ? AND nombre_usuario != 'NECESITA MODIFICACIÓN' AND apellido_usuario != 'NECESITA MODIFICACIÓN'";
+
+  try {
+    const result = await query(sqlSelect, idequipo);
+    const promises = result.map((jugador) => returnPlayerList(jugador.id_usuario));
+    const listaJugadores = await Promise.all(promises);
+
+    res.send({ status: 200, success: true, result: listaJugadores });
+  } catch (err) {
+    console.log(err);
+    res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
+  }
+});
+
+router.get("/staff/equipo=:id", async (req, res) => {
+  // /usuarios/staff/equipo=id
+  // recibimos todos los staff de un equipo por el id de equipo
+
+  const idequipo = req.params.id;
+
+  const sqlSelect =
+    "SELECT id_usuario FROM usuarios WHERE rol > 4 AND rol < 9 AND id_equipo = ? AND nombre_usuario != 'NECESITA MODIFICACIÓN' AND apellido_usuario != 'NECESITA MODIFICACIÓN'";
+
+  try {
+    const result = await query(sqlSelect, idequipo);
+    const promises = result.map((staff) => returnPlayerList(staff.id_usuario));
+    const listaStaff = await Promise.all(promises);
+
+    res.send({ status: 200, success: true, result: listaStaff });
+  } catch (err) {
+    console.log(err);
+    res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
+  }
+});
+
 router.get("/id=:id", [auth, viewer], (req, res) => {
   // /usuarios/id=:id
   // recibimos usuario por id
