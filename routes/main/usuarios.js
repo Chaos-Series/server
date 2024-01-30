@@ -35,8 +35,9 @@ router.get("/jugadores", async (req, res) => {
     returnPlayerList(res);
 });
 
-router.get("/jugadores/equipo=:id", async (req, res) => {
-  // /usuarios/jugadores/equipo=id
+router.get("/wp/jugadores/equipo=:id", async (req, res) => {
+  // /wp/usuarios/jugadores/equipo=id
+  // endpoint wordpress
   // recibimos todos los jugadores de un equipo por el id de equipo
 
   const idequipo = req.params.id;
@@ -56,8 +57,9 @@ router.get("/jugadores/equipo=:id", async (req, res) => {
   }
 });
 
-router.get("/staff/equipo=:id", async (req, res) => {
-  // /usuarios/staff/equipo=id
+router.get("/wp/staff/equipo=:id", async (req, res) => {
+  // /wp/usuarios/staff/equipo=id
+  // endpoint wordpress
   // recibimos todos los staff de un equipo por el id de equipo
 
   const idequipo = req.params.id;
