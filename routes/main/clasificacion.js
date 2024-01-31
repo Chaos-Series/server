@@ -1,10 +1,7 @@
 // Importamos dependencias
 const express = require("express");
 
-// Importamos middlewares
-const { Webhook } = require("discord-webhook-node");
-const hook = new Webhook("https://discord.com/api/webhooks/1141434977733582900/XLZWqEsQti3PwOhxsFDXHKxU_owbh3L11iUcn0cHbl5yIlSjlUvBmu598HivoOOKdSi2");
-const db = require("../../middleware/db");
+const { returnQuery } = require("../../utils/returnQuery");
 
 // Set del router
 const router = express.Router();
@@ -12,7 +9,6 @@ const router = express.Router();
 // *************************
 // Set de todos los endpoints
 // *************************
-
 
 /**
  * Obtiene la clasificación de todos los equipos.
@@ -22,15 +18,33 @@ const router = express.Router();
  * @returns {object} La clasificación de todos los equipos.
  */
 router.get("/", (req, res) => {
-    const sqlSelect = "SELECT id_equipo, id_liga, id_temporada, victorias, derrotas, puntuacion, kda, oro, minions, barones, dragones, almas, torres, campeones_jugados, campeones_baneados FROM estadisticasequipos ORDER BY puntuacion DESC, id_equipo DESC";
-    db.query(sqlSelect, (err, result) => {
-        if (err) {
-            res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
-        } else {
-            res.send({ status: 200, success: true, result });
-        }
-    });
+    const { id_liga, id_temporada } = req.query;
+
+    let query = "SELECT id_equipo, id_liga, id_temporada, victorias, derrotas, puntuacion FROM estadisticasequipos";
+    let params = [];
+
+    if (id_liga && id_temporada) {
+        query += " WHERE id_liga = ? AND id_temporada = ?";
+        params = [id_liga, id_temporada];
+    }
+
+    query += " ORDER BY puntuacion DESC, id_equipo DESC";
+
+    returnQuery(query, res, params);
 });
+
+
+/**
+ * Obtiene la clasificación de todos los equipos con estadísticas.
+ * 
+ * @route GET /clasificacion
+ * 
+ * @returns {object} La clasificación de todos los equipos con estadísticas.
+*/
+router.get("/detalles", (req, res) => {
+    returnQuery("SELECT id_equipo, id_liga, id_temporada, victorias, derrotas, puntuacion, kda, oro, minions, barones, dragones, almas, torres, campeones_jugados, campeones_baneados FROM estadisticasequipos ORDER BY puntuacion DESC, id_equipo DESC", res);
+});
+
 
 // Exportamos el router
 module.exports = router;
