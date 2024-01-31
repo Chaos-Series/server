@@ -133,14 +133,12 @@ router.get("/nombre=:nombre/contra=:contra", async (req, res) => {
   const { nombre, contra } = req.params;
   await returnQuery("SELECT nick_usuario, contra FROM usuarios WHERE nick_usuario = ?", res, [nombre], false)
     .then((result) => {
-      if (result.length == 0) {
-        if (result[0]["contra"] == contra) {
-          res.send({ status: 200, success: true, result: result[0]["nick_usuario"] });
-        } else {
-          res.send({ status: 401, success: false, reason: "Credenciales erróneas." });
-        }
+      if (result.length === 0) return res.send({ status: 404, success: false, reason: "El usuario no existe." });
+
+      if (result[0]["contra"] == contra) {
+        res.send({ status: 200, success: true, result: result[0]["nick_usuario"] });
       } else {
-        res.send({ status: 200, success: true, result: result[0].nick_usuario });
+        res.send({ status: 401, success: false, reason: "Credenciales erróneas." });
       }
     })
     .catch((err) => {
@@ -206,10 +204,7 @@ router.get("/enlaces/id=:id", [auth, viewer], (req, res) => {
  */
 router.post("/", [auth, admin], async (req, res) => {
   const { nombre, apellido, nick, edad, rol, contra } = req.body;
-
-  const sql =
-    "INSERT INTO `usuarios` (`id_usuario`, `id_equipo`, `id_discord`, `nombre_usuario`, `apellido_usuario`, `nick_usuario`, `edad`, `rol`, `contra`) VALUES (NULL, NULL, NULL, ?, ?, ?, ?, ?, ?)";
-  returnQuery(sql, res, [nombre, apellido, nick, edad, rol ?? 0, contra]);
+  returnQuery("INSERT INTO `usuarios` (`id_usuario`, `id_equipo`, `id_discord`, `nombre_usuario`, `apellido_usuario`, `nick_usuario`, `edad`, `rol`, `contra`) VALUES (NULL, NULL, NULL, ?, ?, ?, ?, ?, ?)", res, [nombre, apellido, nick, edad, rol ?? 0, contra]);
 });
 
 
