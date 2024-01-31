@@ -8,7 +8,6 @@ const { admin, viewer, self } = require("../../middleware/roles");
 const db = require("../../middleware/db");
 
 //Importamos utils
-const returnPlayer = require("../../utils/returnPlayer");
 const { getPlayerStats } = require("../../utils/getPlayerStats");
 
 // Set del router
