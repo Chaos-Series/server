@@ -31,8 +31,8 @@ router.get("/", (req, res) => {
  * @returns {object} La clasificación de todos los equipos.
  */
 router.get("/id=:id", (req, res) => {
-    const { query, params } = getSQL(req, "SELECT id_equipo, id_liga, id_temporada, victorias, derrotas, puntuacion FROM estadisticasequipos");
-    returnQuery(query, res, params);
+    const { id } = req.params;
+    returnQuery("SELECT id_equipo, id_liga, id_temporada, victorias, derrotas, puntuacion FROM estadisticasequipos WHERE id_equipo = ?", res, [id]);
 });
 
 
