@@ -21,6 +21,8 @@ async function returnQuery(query, res, params, sendResponse = true) {
         resolve(result);
       }
     });
+  }).catch(error => {
+    // console.log(error);
   });
 }
 
