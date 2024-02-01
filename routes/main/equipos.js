@@ -80,6 +80,21 @@ router.get("/usuarios/id=:id", (req, res) => {
     });
 });
 
+//;
+router.get("/partidos/id=:id", (req, res) => {
+    // /equipos/partidos/id=:id
+    // recibimos todos los partidos de un equipo a partir de su id
+    const id = req.params.id;
+    const sqlSelect = "SELECT * FROM partidos WHERE tipo = 0 AND id_equipo1 = ? OR id_equipo2 = ? ORDER BY fecha";
+    db.query(sqlSelect, [id, id], (err, result) => {
+        if (err) {
+            res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
+        } else {
+            res.send({ status: 200, success: true, result: result });
+        }
+    });
+});
+
 router.post("/", [auth, admin], upload.single("imagenEquipo"), async (req, res) => {
     // /equipos
     // crear un equipo
