@@ -12,10 +12,25 @@ const router = express.Router();
 // *************************
 // Set de todos los endpoints
 // *************************
+
+/**
+ * Recibe la info de riot y la envía al webhook de discord.
+ * 
+ * @route POST /riot
+ * 
+ * @returns {null} 
+ */
 router.post("/", async (req, res) => {
     hook.send("recibida info de riot. <@286402429258301440>");
 });
 
+/**
+ * Actualiza la información de un partido.
+ * 
+ * @route POST /riot/inhouses
+ * 
+ * @returns {object} La respuesta de la base de datos. 
+ */
 router.post("/inhouses", async (req, res) => {
     //hook.send("recibida info de riot. <@286402429258301440>");
     console.log(req.body.shortCode)

@@ -37,6 +37,7 @@ app.use(cors({
     },
 }));
 app.options('*', cors()) // habilitar Preflight de CORS
+app.disable('x-powered-by'); // deshabilitar header X-Powered-By por seguridad
 
 // Set de rutas
 const routes = [
