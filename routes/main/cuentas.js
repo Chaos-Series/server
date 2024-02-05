@@ -11,9 +11,15 @@ const db = require("../../middleware/db");
 const router = express.Router();
 const RIOT_API = process.env.RIOT_API;
 
+
+/**
+ * Obtiene todas las cuentas de LoL de todos los usuarios.
+ * 
+ * @route GET /cuentas
+ * 
+ * @returns {object} Todas las cuentas de LoL de todos los usuarios.
+ */
 router.get("/", [auth, viewer], (req, res) => {
-    // GET /cuentas
-    // recibimos todas las cuentas de LoL de todos los usuarios
     const sqlSelect = "SELECT id_cuenta, invocador, puuid_lol FROM cuentas_lol";
     db.query(sqlSelect, (err, result) => {
         if (err) {
@@ -24,9 +30,17 @@ router.get("/", [auth, viewer], (req, res) => {
     });
 });
 
+
+/**
+ * Obtiene el nombre de invocador a partir de su nombre.
+ * 
+ * @route GET /cuentas/nombre=:nombre&tag=:tag
+ * 
+ * @param {string} nombre - El nombre de invocador.
+ * @param {string} tag - El tag de invocador.
+ * @returns {object} El nombre de invocador a partir de su nombre.
+ */
 router.get("/nombre=:nombre&tag=:tag", [auth, viewer], (req, res) => {
-    // GET /cuentas/nombre=:nombre&tag=:tag
-    // recibimos el nombre de invocador a partir de su nombre
     const { nombre, tag } = req.params;
 
     axios
@@ -52,9 +66,16 @@ router.get("/nombre=:nombre&tag=:tag", [auth, viewer], (req, res) => {
         });
 });
 
+
+/**
+ * Obtiene los datos de una cuenta a partir de su puuid.
+ * 
+ * @route GET /cuentas/puuid=:puuid
+ * 
+ * @param {string} puuid - El puuid de la cuenta.
+ * @returns {object} Los datos de una cuenta de LoL a partir de su puuid.
+ */
 router.get("/puuid=:puuid", [auth, viewer], (req, res) => {
-    // GET /cuentas/puuid=:puuid
-    // recibimos datos de la cuenta a partir de su puuid
     const { puuid } = req.params;
 
     axios
@@ -70,9 +91,21 @@ router.get("/puuid=:puuid", [auth, viewer], (req, res) => {
         });
 });
 
+
+/**
+ * Crea una cuenta de LoL de un usuario.
+ * 
+ * @route POST /cuentas
+ * 
+ * @param {string} id_usuario - El ID del usuario.
+ * @param {string} invocador - El nombre de invocador.
+ * @param {string} tag - El tag de invocador.
+ * @param {string} puuid - El puuid de la cuenta.
+ * @param {string} linea_principal - La línea principal de la cuenta.
+ * @param {string} linea_secundaria - La línea secundaria de la cuenta.
+ * @returns {object} El resultado de la query
+ */
 router.post("/", [auth, self], async (req, res) => {
-    // POST /cuentas
-    // creamos un usuario
     const { id_usuario, invocador, tag, puuid, linea_principal, linea_secundaria } = req.body;
 
     const sql = "INSERT INTO `cuentas_lol` (`id_cuenta`, `id_usuario`, `id_juego`, `invocador`, `tag`, `puuid_lol`, `linea_principal`, `linea_secundaria`) VALUES (NULL, ?, 1, ?, ?, ?, ?, ?)";
@@ -85,9 +118,21 @@ router.post("/", [auth, self], async (req, res) => {
     });
 });
 
+
+/**
+ * Modifica una cuenta de un usuario.
+ * 
+ * @route PUT /cuentas
+ * 
+ * @param {string} id - El ID de la cuenta.
+ * @param {string} invocador - El nombre de invocador.
+ * @param {string} tag - El tag de invocador.
+ * @param {string} puuid - El puuid de la cuenta.
+ * @param {string} linea_principal - La línea principal de la cuenta.
+ * @param {string} linea_secundaria - La línea secundaria de la cuenta.
+ * @returns {object} El resultado de la query
+ */
 router.put("/", [auth, self], async (req, res) => {
-    // PUT /cuentas
-    // modificamos una cuenta de un usuario
     const { id, invocador, tag, puuid_lol, linea_principal, linea_secundaria } = req.body;
 
     const sql = "UPDATE cuentas_lol SET invocador = ?, puuid_lol = ?, linea_principal = ?, linea_secundaria = ?, tag = ? WHERE id_cuenta = ?";
@@ -100,9 +145,16 @@ router.put("/", [auth, self], async (req, res) => {
     });
 });
 
+
+/**
+ * Elimina una cuenta de un usuario.
+ * 
+ * @route DELETE /cuentas
+ * 
+ * @param {string} id_cuenta - El ID de la cuenta.
+ * @returns {object} El resultado de la query
+ */
 router.delete("/", [auth, self], async (req, res) => {
-    // DELETE /cuentas
-    // eliminamos una cuenta a partir de su id
     const { id_cuenta } = req.body;
 
     const sqlDelete = "DELETE FROM cuentas_lol WHERE id_cuenta = ?";

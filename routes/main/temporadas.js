@@ -13,6 +13,13 @@ const router = express.Router();
 // Set de todos los endpoints
 // *************************
 
+/**
+ * Obtiene todas las temporadas.
+ * 
+ * @route GET /temporadas
+ * 
+ * @returns {object} Todas las temporadas.
+ */
 router.get("/", [auth, viewer], (req, res) => {
     // /temporadas
     //buscamos todas las temporadas
