@@ -20,7 +20,7 @@ async function returnMatch(res) {
 
       info.equipos = {};
       info.equipos.equipoBlue = equipoBlue === undefined ? [] : equipoBlue;
-      info.equipos.equipsRed = equipoRed === undefined ? [] : equipoRed;
+      info.equipos.equipoRed = equipoRed === undefined ? [] : equipoRed;
 
       return info.equipos.length != 0;
     });
