@@ -4,7 +4,7 @@ const { returnQuery } = require("./returnQuery");
 async function returnMatch(res) {
   try {
     let partidos = await returnQuery(
-      "SELECT id_partido, id_liga, id_temporada, id_equipo1, id_equipo2, fecha, arbitros, tipo, jornada, jugadores_blue, jugadores_red, progreso, match_id, match_info, estadisticas_recogidas, enlace_youtube, puntuacion_blue, puntuacion_red FROM partidos WHERE tipo = 0",
+      "SELECT id_partido, id_liga, id_temporada, id_equipo1, id_equipo2, fecha, arbitros, tipo, jornada, jugadores_blue, jugadores_red, progreso, match_id, match_info, estadisticas_recogidas, enlace_youtube, puntuacion_blue, puntuacion_red FROM partidos WHERE tipo = 0 ORDER BY progreso ASC, fecha ASC",
       res,
       [],
       false
