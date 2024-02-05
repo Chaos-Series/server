@@ -52,6 +52,9 @@ const routes = [
     { path: "/cuentas", router: require("./routes/main/cuentas") },
     { path: "/emparejamientos", router: require("./routes/main/emparejamientos") },
     { path: "/clasificacion", router: require("./routes/main/clasificacion") },
+
+    //v2
+    { path: "/v2/partidos", router: require("./routes/v2/partidos") },
 ];
 
 routes.forEach(route => {
