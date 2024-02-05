@@ -9,19 +9,31 @@ const db = require("../../middleware/db");
 
 //Importamos utils
 const { getPlayerStats } = require("../../utils/getPlayerStats");
+const { returnMatch } = require("../../utils/returnMatch");
 
 // Set del router
 const router = express.Router();
 const RIOT_API = process.env.RIOT_API;
 
 /**
- * Obtiene todos los partidos ordenados por progreso y fecha.
+ * Obtiene todos los partidos ordenados por progreso y fecha, con la informacion de los equipos implicados.
  * 
  * @route GET /partidos
  * 
- * @returns {object} Todos los partidos ordenados por progreso y fecha.
+ * @returns {object} Todos los partidos ordenados por progreso y fecha y con la informacion de los equipos implicados.
  */
 router.get("/", (req, res) => {
+  returnMatch(res);
+});
+
+/**
+ * Obtiene todos los partidos ordenados por progreso y fecha.
+ * 
+ * @route GET /partidos/panel
+ * 
+ * @returns {object} Todos los partidos ordenados por progreso y fecha.
+ */
+router.get("/panel", (req, res) => {
   const sqlSelect = "SELECT * FROM partidos WHERE tipo = 0 ORDER BY progreso ASC, fecha ASC";
   db.query(sqlSelect, (err, result) => {
     if (err) {
@@ -93,16 +105,33 @@ router.get("/inhouses/id=:id", [auth, viewer], (req, res) => {
   });
 });
 
-
 /**
  * Obtiene las estadísticas de un partido sin estadísticas y las actualiza en la base de datos.
+ * 
+ * @route PUT /partidos/estadisticas
+ * 
+ * @returns {null} 
+ */
+router.put("/estadisticas", (req, res) => {
+  const sqlSelect = "SELECT match_id FROM partidos WHERE tipo = 0 AND estadisticas_recogidas = 0 AND match_id IS NOT null limit 10";
+  db.query(sqlSelect, (err, result) => {
+    if (err) {
+      res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
+    } else {
+      getPlayerStats(res, result);
+    }
+  });
+º});
+
+/**
+ * Obtiene las estadísticas de una inhouse sin estadísticas y las actualiza en la base de datos.
  * 
  * @route PUT /partidos/inhouses/estadisticas
  * 
  * @returns {null} 
  */
 router.put("/inhouses/estadisticas", (req, res) => {
-  const sqlSelect = "SELECT match_id FROM partidos WHERE tipo = 1 AND estadisticas_recogidas = 0 AND match_id IS NOT null limit 1";
+  const sqlSelect = "SELECT match_id FROM partidos WHERE tipo = 1 AND estadisticas_recogidas = 0 AND match_id IS NOT null limit 10";
   db.query(sqlSelect, (err, result) => {
     if (err) {
       res.send({ status: 500, success: false, reason: "Problema con la base de datos.", error: err });
