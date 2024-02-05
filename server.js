@@ -6,7 +6,7 @@ const cors = require("cors");
 
 // Set del servidor
 const app = express();
-const port = 3001;
+const port = 3000;
 
 // Set de rate limit
 const limiter = rateLimit({
